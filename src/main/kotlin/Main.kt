@@ -2,6 +2,12 @@ package ru.netology
 
 fun main() {
     val result = resultsTransfers(100000, "Visa")
+    println()
+    val result1 = resultsTransfers(100000, "Mir")
+    println()
+    val result2 = resultsTransfers(100000, "Maestro")
+    println()
+    val result3 = resultsTransfers(100000)
 
 }
 
@@ -19,15 +25,13 @@ fun typeVMCommission(amount: Int): Double {
     return commission.toDouble()
 }
 
-fun transferCommission(amount: Int, typeCard: String) = when {
-    typeCard == "Mastercard" -> amount - typeMMCommission(amount)
-    typeCard == "Maestro" -> typeMMCommission(amount)
-    typeCard == "Visa" -> typeVMCommission(amount)
-    typeCard == "Mir" -> typeVMCommission(amount)
-    else -> 0
+fun transferCommission(amount: Int, typeCard: String) = when (typeCard) {
+    "Mastercard", "Maestro" -> typeMMCommission(amount)
+    "Visa", "Mir" -> typeVMCommission(amount)
+    else -> println("")
 }
 
-fun calculationAmountTransfers(amount: Int, typeCard: String) = when {
+fun calculationAmountTransfers(amount: Int, typeCard: String): Number = when {
     typeCard == "Mastercard" -> amount - typeMMCommission(amount)
     typeCard == "Maestro" -> amount - typeMMCommission(amount)
     typeCard == "Visa" -> amount - typeVMCommission(amount)
@@ -35,16 +39,18 @@ fun calculationAmountTransfers(amount: Int, typeCard: String) = when {
     else -> amount
 }
 
-fun resultsTransfers(amount: Int, typeCard: String) {
+fun resultsTransfers(amount: Int, typeCard: String = "VK Pay", previousTransfer: Int = 0) {
     val amountTransfers = amount
     val card = typeCard
     val commission = transferCommission(amount, typeCard)
-    val resultAmount = calculationAmountTransfers(amount, typeCard)
+    val resultAmount: Int = calculationAmountTransfers(amount, typeCard).toInt()
+    val month = previousTransfer + resultAmount
     return println(
         "Сумма вашего перевода: $amount рублей\n" +
                 "Перевод с $card\n" +
                 "Сумма комиссии: $commission рублей\n" +
-                "Итого сумма перевода с учётом комиссии: $resultAmount рублей\n"
+                "Итого сумма перевода с учётом комиссии: $resultAmount рублей\n" +
+                "Сумма переводов за месяц: $month рублей"
     )
 }
 
