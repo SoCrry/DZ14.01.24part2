@@ -1,17 +1,45 @@
 package ru.netology
 
 fun main() {
-    val result = resultsTransfers(100000, "Visa")
+    var amount = 100000
+    var typeCard = "Maestro"
+    var previousTransfer = 0
+    resultTransfer(amount, typeCard, previousTransfer)
+    previousTransfer =
+        if (previousTransfer + resultTransfer(
+                amount,
+                typeCard,
+                previousTransfer
+            ).toInt() <= 600000
+        ) previousTransfer + resultTransfer(
+            amount,
+            typeCard,
+            previousTransfer
+        ).toInt() else previousTransfer
+    resultPrint(amount, typeCard, previousTransfer)
+
     println()
-    val result1 = resultsTransfers(100000, "Mir")
-    println()
-    val result2 = resultsTransfers(100000, "Maestro")
-    println()
-    val result3 = resultsTransfers(100000)
+
+    amount = 100000
+    typeCard = "Mastercard"
+    resultTransfer(amount, typeCard, previousTransfer)
+    previousTransfer =
+        if (previousTransfer + resultTransfer(
+                amount,
+                typeCard,
+                previousTransfer
+            ).toInt() <= 600000
+        ) previousTransfer + resultTransfer(
+            amount,
+            typeCard,
+            previousTransfer
+        ).toInt() else previousTransfer
+    resultPrint(amount, typeCard, previousTransfer)
+
 
 }
 
-fun typeMMCommission(amount: Int): Double {
+fun typeMMCommission(amount: Int, previousTransfer: Int): Double {
     val commission = if (amount > 75000) {
         amount * 0.6 / 100 + 20
     } else {
@@ -25,34 +53,44 @@ fun typeVMCommission(amount: Int): Double {
     return commission.toDouble()
 }
 
-fun transferCommission(amount: Int, typeCard: String) = when (typeCard) {
-    "Mastercard", "Maestro" -> typeMMCommission(amount)
+fun transferCommission(amount: Int, typeCard: String = "VK Pay", previousTransfer: Int = 0): Double = when (typeCard) {
+    "Mastercard", "Maestro" -> typeMMCommission(amount, previousTransfer = 0)
     "Visa", "Mir" -> typeVMCommission(amount)
-    else -> println("")
+    else -> 0.0
 }
 
-fun calculationAmountTransfers(amount: Int, typeCard: String): Number = when {
-    typeCard == "Mastercard" -> amount - typeMMCommission(amount)
-    typeCard == "Maestro" -> amount - typeMMCommission(amount)
-    typeCard == "Visa" -> amount - typeVMCommission(amount)
-    typeCard == "Mir" -> amount - typeVMCommission(amount)
-    else -> amount
-}
-
-fun resultsTransfers(amount: Int, typeCard: String = "VK Pay", previousTransfer: Int = 0) {
-    val amountTransfers = amount
-    val card = typeCard
-    val commission = transferCommission(amount, typeCard)
-    val resultAmount: Int = calculationAmountTransfers(amount, typeCard).toInt()
-    val month = previousTransfer + resultAmount
-    return println(
+fun resultPrint(amount: Int, typeCard: String, previousTransfer: Int) {
+    return if (amount - transferCommission(
+            amount,
+            typeCard,
+            previousTransfer
+        ) <= 150000
+    ) println(
         "Сумма вашего перевода: $amount рублей\n" +
-                "Перевод с $card\n" +
-                "Сумма комиссии: $commission рублей\n" +
-                "Итого сумма перевода с учётом комиссии: $resultAmount рублей\n" +
-                "Сумма переводов за месяц: $month рублей"
+                "Перевод с $typeCard\n" +
+                "Итого сумма перевода с учётом комиссии: ${
+                    resultTransfer(
+                        amount,
+                        typeCard,
+                        previousTransfer
+                    )
+                } рублей\n" +
+                "Сумма переводов за месяц: $previousTransfer рублей"
     )
+    else println("Вы превысили лимиты перевода денежных средств")
 }
+
+fun resultTransfer(amount: Int, typeCard: String, previousTransfer: Int): Double {
+    val result = if (amount - transferCommission(
+            amount,
+            typeCard,
+            previousTransfer
+        ) > 150000
+    )
+        0.0 else amount - transferCommission(amount, typeCard, previousTransfer)
+    return result
+}
+
 
 
 
