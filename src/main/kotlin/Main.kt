@@ -1,21 +1,20 @@
 package ru.netology
 
 fun main() {
-    var amount = 100000
-    var typeCard = "Maestro"
+    var amount = 15000
+    var typeCard = "VK Pay"
     var previousTransfer = 0
+
     resultTransfer(amount, typeCard, previousTransfer)
-    previousTransfer =
-        if (previousTransfer + resultTransfer(
-                amount,
-                typeCard,
-                previousTransfer
-            ).toInt() <= 600000
-        ) previousTransfer + resultTransfer(
-            amount,
-            typeCard,
-            previousTransfer
-        ).toInt() else previousTransfer
+    previousTransfer += resultTransfer(amount, typeCard, previousTransfer).toInt()
+    resultPrint(amount, typeCard, previousTransfer)
+
+    println()
+
+    amount = 10000
+    typeCard = "Maestro"
+    resultTransfer(amount, typeCard, previousTransfer)
+    previousTransfer += resultTransfer(amount, typeCard, previousTransfer).toInt()
     resultPrint(amount, typeCard, previousTransfer)
 
     println()
@@ -23,17 +22,7 @@ fun main() {
     amount = 100000
     typeCard = "Mastercard"
     resultTransfer(amount, typeCard, previousTransfer)
-    previousTransfer =
-        if (previousTransfer + resultTransfer(
-                amount,
-                typeCard,
-                previousTransfer
-            ).toInt() <= 600000
-        ) previousTransfer + resultTransfer(
-            amount,
-            typeCard,
-            previousTransfer
-        ).toInt() else previousTransfer
+    previousTransfer += resultTransfer(amount, typeCard, previousTransfer).toInt()
     resultPrint(amount, typeCard, previousTransfer)
 
 
@@ -60,11 +49,9 @@ fun transferCommission(amount: Int, typeCard: String = "VK Pay", previousTransfe
 }
 
 fun resultPrint(amount: Int, typeCard: String, previousTransfer: Int) {
-    return if (amount - transferCommission(
-            amount,
-            typeCard,
-            previousTransfer
-        ) <= 150000
+    return if (typeCard == "VK Pay" && amount > 15000 || typeCard == "VK Pay" && previousTransfer + amount > 40000
+    ) println("Вы превысили лимиты перевода денежных средств")
+    else if (amount <= 150000 || previousTransfer + amount <= 600000
     ) println(
         "Сумма вашего перевода: $amount рублей\n" +
                 "Перевод с $typeCard\n" +
@@ -80,14 +67,14 @@ fun resultPrint(amount: Int, typeCard: String, previousTransfer: Int) {
     else println("Вы превысили лимиты перевода денежных средств")
 }
 
-fun resultTransfer(amount: Int, typeCard: String, previousTransfer: Int): Double {
-    val result = if (amount - transferCommission(
-            amount,
-            typeCard,
-            previousTransfer
-        ) > 150000
+fun resultTransfer(amount: Int, typeCard: String = "VK Pay", previousTransfer: Int = 0): Double {
+    val result = if (typeCard == "VK Pay" && amount > 15000 || typeCard == "VK Pay" && previousTransfer + amount > 40000
     )
-        0.0 else amount - transferCommission(amount, typeCard, previousTransfer)
+        0.0 else if (amount > 150000 || previousTransfer + amount > 600000) 0.0 else amount - transferCommission(
+        amount,
+        typeCard,
+        previousTransfer
+    )
     return result
 }
 
